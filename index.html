@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bài tập Ngữ pháp N2 - Bài 1 (Shinkanzen)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
+        
+        body {
+            background: linear-gradient(rgba(255, 245, 247, 0.55), rgba(240, 220, 225, 0.65)),
+                        url('https://images.unsplash.com/photo-1522383225653-ed111181a951?q=80&w=1920&auto=format&fit=crop') center/cover no-repeat fixed;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        .sakura-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
+        .petal {
+            position: absolute;
+            background: #ffb7c5;
+            border-radius: 15px 0 15px 0;
+            opacity: 0.75;
+            filter: drop-shadow(0 2px 4px rgba(216, 90, 127, 0.2));
+            animation: fall linear infinite;
+        }
+        @keyframes fall {
+            0% { transform: translate(0, -10px) rotate(0deg); opacity: 0.8; }
+            100% { transform: translate(120px, 105vh) rotate(360deg); opacity: 0; }
+        }
+
+        .app-card {
+            position: relative;
+            z-index: 2;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            width: 100%;
+            max-width: 600px;
+            border-radius: 24px;
+            padding: 32px 28px;
+            border: 1.5px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 20px 40px rgba(180, 100, 120, 0.15);
+        }
+
+        .lesson-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #d85a7f;
+            margin-bottom: 6px;
+        }
+
+        .header { 
+            display: flex; 
+            justify-content: space-between; 
+            font-size: 14px; 
+            font-weight: 700; 
+            color: #b06d7e; 
+            margin-bottom: 20px; 
+            padding-bottom: 10px;
+            border-bottom: 1.5px solid #f2d5db;
+        }
+
+        .question-card {
+            background: #fff5f7;
+            border-left: 4px solid #d85a7f;
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .question-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #d85a7f;
+            margin-bottom: 8px;
+        }
+
+        .question-text { 
+            font-size: 18px; 
+            font-weight: 600; 
+            color: #3a2e30; 
+            line-height: 1.6;
+        }
+
+        .options-grid { display: flex; flex-direction: column; gap: 12px; }
+        
+        .opt-btn {
+            display: flex;
+            align-items: center;
+            background: #ffffff;
+            border: 1.5px solid #f2d5db;
+            color: #4a383b;
+            padding: 14px 18px;
+            border-radius: 14px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: left;
+        }
+
+        .opt-btn::before {
+            content: '';
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border: 2px solid #b06d7e;
+            border-radius: 50%;
+            margin-right: 14px;
+            flex-shrink: 0;
+            transition: all 0.2s;
+        }
+
+        .opt-btn:hover { 
+            background: #fff0f3; 
+            border-color: #d85a7f; 
+            transform: translateY(-1px); 
+        }
+
+        .opt-btn.correct { 
+            background: #e8f5e9 !important; 
+            border-color: #66bb6a !important; 
+            color: #2e7d32 !important; 
+        }
+        .opt-btn.correct::before {
+            background: #4caf50;
+            border-color: #4caf50;
+            box-shadow: inset 0 0 0 3px #ffffff;
+        }
+
+        .opt-btn.wrong { 
+            background: #ffebee !important; 
+            border-color: #ef5350 !important; 
+            color: #c62828 !important; 
+        }
+        .opt-btn.wrong::before {
+            background: #ef5350;
+            border-color: #ef5350;
+            box-shadow: inset 0 0 0 3px #ffffff;
+        }
+
+        .feedback { 
+            display: none;
+            margin-top: 20px; 
+            font-size: 15px; 
+            text-align: left;
+        }
+
+        .result-status {
+            font-weight: 700;
+            font-size: 16px;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+
+        /* Khung giải thích chi tiết */
+        .explain-card {
+            background: rgba(255, 255, 255, 0.9);
+            border: 1.5px solid #f2d5db;
+            border-radius: 16px;
+            padding: 16px;
+            line-height: 1.6;
+            color: #3a2e30;
+        }
+
+        .explain-item {
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .explain-item:last-child { margin-bottom: 0; }
+
+        .tag {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 700;
+            margin-right: 6px;
+            color: white;
+        }
+        .tag-grammar { background: #e07a9e; }
+        .tag-trans { background: #5c6bc0; }
+        .tag-meaning { background: #26a69a; }
+
+        /* Nút Chuyển câu hỏi */
+        .next-btn {
+            display: block;
+            width: 100%;
+            margin-top: 16px;
+            background: linear-gradient(135deg, #e07a9e 0%, #d85a7f 100%);
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 14px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+        .next-btn:hover { opacity: 0.95; transform: translateY(-1px); }
+    </style>
+</head>
+<body>
+
+    <div class="sakura-container" id="sakura-box"></div>
+
+    <div class="app-card">
+        <div class="lesson-title">Bài 1 - N2 (Shinkanzen Master)</div>
+
+        <div class="header">
+            <span id="q-count">Câu 1 / 19</span>
+            <span id="score-count">Điểm: 0</span>
+        </div>
+
+        <div class="question-card">
+            <div class="question-title" id="q-type">Câu 1: Chọn đáp án đúng</div>
+            <div class="question-text" id="question-content"></div>
+        </div>
+
+        <div class="options-grid" id="quiz-box">
+            <button class="opt-btn" onclick="checkAnswer(0)"></button>
+            <button class="opt-btn" onclick="checkAnswer(1)"></button>
+            <button class="opt-btn" onclick="checkAnswer(2)"></button>
+        </div>
+
+        <!-- Khung hiển thị thông báo & Lời giải thích -->
+        <div class="feedback" id="feedback">
+            <div class="result-status" id="result-status"></div>
+            <div class="explain-card">
+                <div class="explain-item"><span class="tag tag-grammar">Cấu trúc</span><span id="ex-grammar"></span></div>
+                <div class="explain-item"><span class="tag tag-meaning">Ý nghĩa</span><span id="ex-meaning"></span></div>
+                <div class="explain-item"><span class="tag tag-trans">Dịch câu</span><span id="ex-trans"></span></div>
+            </div>
+            <button class="next-btn" onclick="nextQuestion()">Câu tiếp theo ➔</button>
+        </div>
+    </div>
+
+    <script>
+        function createPetal() {
+            const box = document.getElementById('sakura-box');
+            const p = document.createElement('div');
+            p.classList.add('petal');
+            p.style.width = Math.random() * 8 + 8 + 'px';
+            p.style.height = Math.random() * 10 + 10 + 'px';
+            p.style.left = Math.random() * 100 + 'vw';
+            p.style.animationDuration = Math.random() * 4 + 6 + 's';
+            box.appendChild(p);
+            setTimeout(() => p.remove(), 10000);
+        }
+        setInterval(createPetal, 400);
+
+        // Dữ liệu 19 câu bài tập chuẩn Shinkanzen Master N2 - Bài 1
+        const quizData = [
+            {
+                q: '( ) 際に、家の中で修理するところがあるかどうか調べておく必要がある。',
+                options: ['いい天気の', '大掃除の', '時間がある'],
+                answer: 1,
+                grammar: 'N の + 際（に）',
+                meaning: 'Khi... / Nhân dịp... (Dùng trong văn phong trang trọng, thông báo).',
+                trans: 'Khi tổng vệ sinh, cần kiểm tra trước xem trong nhà có chỗ nào cần sửa chữa không.'
+            },
+            {
+                q: '( ) 際、音が出る電子辞書は大変便利です。',
+                options: ['発音が難しい', '発音がわからない', '発音を調べる'],
+                answer: 2,
+                grammar: 'V-辞書形 + 際（に）',
+                meaning: 'Khi... / Lúc... (Đi với động từ thể hiện hành vi, thời điểm).',
+                trans: 'Khi tra cứu phát âm, từ điển điện tử có phát tiếng rất tiện lợi.'
+            },
+            {
+                q: '( ) 際は、こちらのテーブルをお使いいただけます。',
+                options: ['お食事の', 'ご飯を食べに', 'お一人様の'],
+                answer: 0,
+                grammar: 'N の + 際（に）',
+                meaning: 'Khi... / Trong trường hợp... (Văn phong trang trọng).',
+                trans: 'Khi dùng bữa, quý khách có thể sử dụng chiếc bàn này.'
+            },
+            {
+                q: '地震の際は、( )。',
+                options: ['慌てずに行動しなければならない', '慌てちゃだめ', '慌てていない'],
+                answer: 0,
+                grammar: '～際（に）+ Mệnh đề chính mang tính trang trọng/thông báo',
+                meaning: 'Tránh dùng ngữ khí suồng sã, lịch sự không phù hợp.',
+                trans: 'Khi xảy ra động đất, cần phải hành động một cách bình tĩnh.'
+            },
+            {
+                q: '父は ( ) に際して、医者にいろいろ質問した。',
+                options: ['病気が回復する', '手術を受ける', '毎日病院に行く'],
+                answer: 1,
+                grammar: 'V-辞書形 / N + に際して',
+                meaning: 'Khi bắt đầu... / Trước khi... (Cho sự kiện quan trọng, diễn ra 1 lần).',
+                trans: 'Trước khi phẫu thuật, bố tôi đã hỏi bác sĩ rất nhiều điều.'
+            },
+            {
+                q: '( ) にあたって、必要な書類を準備した。',
+                options: ['出勤する', '留学する', '図書館へ行く'],
+                answer: 1,
+                grammar: 'V-辞書形 / N + にあたって',
+                meaning: 'Nhân dịp... / Khi chuẩn bị... (Hành động mang tính chủ động, tích cực).',
+                trans: 'Nhân dịp đi du học, tôi đã chuẩn bị các giấy tờ cần thiết.'
+            },
+            {
+                q: '( ) とたん、眠くなった。',
+                options: ['勉強が終わった', '勉強をした', '勉強をしていた'],
+                answer: 0,
+                grammar: 'V-た形 + とたん（に）',
+                meaning: 'Ngay sau khi... thì đột nhiên... (Chỉ đi với V thể た).',
+                trans: 'Ngay sau khi việc học kết thúc, tôi liền cảm thấy buồn ngủ.'
+            },
+            {
+                q: '彼女はわたしの顔を見たとたんに、( )。',
+                options: ['泣き出した', 'あいさつした', 'うれしそうだった'],
+                answer: 0,
+                grammar: 'V-た形 + とたん（に）+ Sự việc bất ngờ',
+                meaning: 'Vế sau là sự việc xảy ra bất ngờ ngoài dự đoán.',
+                trans: 'Ngay sau khi nhìn thấy mặt tôi, cô ấy đã bật khóc.'
+            },
+            {
+                q: 'さっきまで大雨が降っていたかと思うと、今は ( )。',
+                options: ['雨は弱くなった', '太陽が出ている', '雨はさらに激しくなった'],
+                answer: 1,
+                grammar: 'V-た形 + (か)と思うと / (か)と思ったら',
+                meaning: 'Vừa mới... thì ngay lập tức biến đổi trạng thái (Mang tính đối lập, bất ngờ).',
+                trans: 'Vừa mới lúc nãy mưa to, thế mà bây giờ mặt trời đã chiếu sáng.'
+            },
+            {
+                q: '7時の時報が鳴ったかと思うと ( )。',
+                options: ['ニュースが始まる', '時計のベルも鳴っていた', '彼は突然立ち上がった'],
+                answer: 2,
+                grammar: 'V-た形 + (か)と思うと',
+                meaning: 'Vừa mới... thì ngay lập tức hành động tiếp theo xảy ra.',
+                trans: 'Vừa mới nghe tiếng chuông báo 7 giờ, anh ấy đã đột nhiên đứng dậy.'
+            },
+            {
+                q: '弟は、やっと見つけた就職先なのに、( ) のうちに、もう辞めてしまった。',
+                options: ['仕事を覚えたか覚えないか', '働いているかいないか', '友達がいるかいないか'],
+                answer: 0,
+                grammar: 'V-辞書形/た形 + か + V-ない形 + かのうちに',
+                meaning: 'Chưa biết đã xong hay chưa thì việc khác đã diễn ra (Lặp lại cùng 1 động từ).',
+                trans: 'Em trai tôi dù khó khăn lắm mới tìm được việc, thế mà công việc chưa kịp quen đã lại nghỉ rồi.'
+            },
+            {
+                q: 'あの学生は、試験が始まって ( ) のうちに、教室を出ていった。',
+                options: ['よく考えたか考えないか', '10分たったかたたないか', '頑張ったか頑張らないか'],
+                answer: 1,
+                grammar: 'V-た形 + か + V-ない形 + かのうちに',
+                meaning: 'Việc này vừa xảy ra trong khoảnh khắc thì việc khác nối tiếp.',
+                trans: 'Học sinh đó bài thi vừa mới bắt đầu chưa đầy 10 phút đã đi ra khỏi phòng học.'
+            },
+            {
+                q: '雨がやんだかやまないかのうちに、( )。',
+                options: ['せみが鳴き出した', '試合を再開しよう', '出発したい'],
+                answer: 0,
+                grammar: '～か～ないかのうちに + Hiện tượng/Hành động tự nhiên',
+                meaning: 'Vế sau KHÔNG đi với câu thể hiện ý chí, mong muốn hay kêu gọi.',
+                trans: 'Mưa vừa mới tạnh xong thì ve sầu đã bắt đầu kêu râm rân.'
+            },
+            {
+                q: '一つの問題が ( )、すぐ次の問題を渡された。',
+                options: ['終わった際に', '終わるにあたって', '終わったかと思うと'],
+                answer: 2,
+                grammar: 'V-た形 + かと思うと',
+                meaning: 'Vừa mới xong việc này thì ngay lập tức việc khác tới.',
+                trans: 'Vừa mới giải xong một bài tập thì tôi đã bị đưa ngay bài tiếp theo.'
+            },
+            {
+                q: 'やっと来たバスに ( )、忘れ物に気がついた。',
+                options: ['乗った際に', '乗るにあたって', '乗ったとたん'],
+                answer: 2,
+                grammar: 'V-た形 + とたん（に）',
+                meaning: 'Ngay sau khi làm gì thì phát hiện ra điều bất ngờ.',
+                trans: 'Ngay sau khi bước lên chiếc xe buýt mãi mới đến, tôi liền nhận ra mình quên đồ.'
+            },
+            {
+                q: 'テニスコートをお使いになる ( )、事務所でロッカーのかぎをお受け取りください。',
+                options: ['際は', 'にあたって', 'かないかのうちに'],
+                answer: 0,
+                grammar: 'N の / V-辞書形 + 際（は）',
+                meaning: 'Lúc... / Khi... (Văn phong hướng dẫn, thông báo trang trọng).',
+                trans: 'Khi sử dụng sân tennis, xin quý khách nhận chìa khóa tủ đồ tại văn phòng.'
+            },
+            {
+                q: '選挙に ( )、大勢の方に協力を依頼した。',
+                options: ['出るにあたって', '出たとたんに', '出たかと思うと'],
+                answer: 0,
+                grammar: 'V-辞書形 + にあたって',
+                meaning: 'Khi chuẩn bị bắt đầu sự kiện lớn, quan trọng.',
+                trans: 'Khi chuẩn bị ra tranh cử, tôi đã nhờ sự trợ giúp của rất nhiều người.'
+            },
+            {
+                q: '赤ちゃんは今泣いたかと思うと、もう ( )。',
+                options: ['泣いている', '笑っている', '寝ていた'],
+                answer: 1,
+                grammar: 'V-た形 + かと思うと + Trạng thái đối lập',
+                meaning: 'Diễn tả sự thay đổi nhanh chóng đến kinh ngạc.',
+                trans: 'Thằng bé vừa mới khóc xong đó mà đã lại đang cười rồi.'
+            },
+            {
+                q: '工事関係者は工事を始める ( )、近所の住民にあいさつをして回った。',
+                options: ['に際して', 'とたん', '最中に'],
+                answer: 0,
+                grammar: 'V-辞書形 + に際して',
+                meaning: 'Trước khi bắt đầu sự kiện/công việc quan trọng.',
+                trans: 'Trước khi bắt đầu thi công, đơn vị thi công đã đi chào hỏi người dân xung quanh.'
+            }
+        ];
+
+        let current = 0, score = 0, canClick = true;
+
+        function init() {
+            const item = quizData[current];
+            document.getElementById('q-count').innerText = `Câu ${current + 1} / ${quizData.length}`;
+            document.getElementById('score-count').innerText = `Điểm: ${score}`;
+            document.getElementById('q-type').innerText = `Câu ${current + 1}: Chọn đáp án đúng`;
+            document.getElementById('question-content').innerText = item.q;
+            document.getElementById('feedback').style.display = 'none';
+            canClick = true;
+
+            const btns = document.querySelectorAll('.opt-btn');
+            btns.forEach((btn, i) => {
+                btn.innerText = item.options[i];
+                btn.className = 'opt-btn';
+            });
+        }
+
+        function checkAnswer(selectedIndex) {
+            if(!canClick) return; 
+            canClick = false;
+
+            const item = quizData[current];
+            const btns = document.querySelectorAll('.opt-btn');
+            const statusEl = document.getElementById('result-status');
+
+            if(selectedIndex === item.answer) {
+                btns[selectedIndex].classList.add('correct'); 
+                score += 10;
+                statusEl.innerHTML = `<span style="color: #4caf50;">✓ 正解 (Chính xác!)</span>`;
+            } else {
+                btns[selectedIndex].classList.add('wrong');
+                btns[item.answer].classList.add('correct');
+                statusEl.innerHTML = `<span style="color: #ef5350;">✕ ざんねん (Đáp án đúng là: ${item.options[item.answer]})</span>`;
+            }
+
+            // Điền thông tin chi tiết giải thích
+            document.getElementById('ex-grammar').innerText = item.grammar;
+            document.getElementById('ex-meaning').innerText = item.meaning;
+            document.getElementById('ex-trans').innerText = item.trans;
+
+            // Hiển thị phần giải thích (không tự nhảy câu nữa)
+            document.getElementById('feedback').style.display = 'block';
+        }
+
+        function nextQuestion() {
+            current = (current + 1) % quizData.length;
+            init();
+        }
+
+        init();
+    </script>
+</body>
+</html>
